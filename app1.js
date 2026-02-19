@@ -30,6 +30,7 @@
 
   let TIERS = null;
   let inited = false;
+  let armed = false;
 
   // ------------------- Utilities -------------------
   function $(id){ return document.getElementById(id); }
@@ -711,10 +712,11 @@ Stock used: ${used} / ${before}.`;
     });
 
     inited = true;
+    // Compute only after init is complete and TIERS is loaded
     compute("magic12");
   }
 
   // Expose
-  window.Magic = { init };
+  window.Magic = { init, compute };
 
 })();
