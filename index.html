@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>#1079 LoL App – Combined (Magic Ratio & Option‑A)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Unified clean dark theme -->
+  <style>
+    :root{
+      --bg:#0f1116;
+      --panel:#1a1d24;
+      --muted:#9aa4b2;
+      --text:#e8eaed;
+      --accent:#3b82f6;
+      --accent-hover:#2563eb;
+      --border:#2d3340;
+      --ok:#198754;
+      --ok-hover:#157347;
+      --field:#222831;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      padding:26px 16px;
+      text-align:center;
+      font-size:1.4rem;
+      font-weight:600;
+      letter-spacing:.4px;
+    }
+
+    .container{
+      max-width:1250px;
+      margin:auto;
+      padding:0 16px 40px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:24px;
+      margin-bottom:22px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.35);
+    }
+
+    h2{
+      margin-top:0;
+      margin-bottom:14px;
+      font-size:1.25rem;
+      font-weight:600;
+    }
+
+    label{
+      display:block;
+      margin:10px 0 6px;
+      color:var(--muted);
+      font-size:.93rem;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #333;
+      background:var(--field);
+      color:var(--text);
+      font-size:1rem;
+    }
+
+    input:focus, select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 2px #3b82f644;
+      outline:none;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+      gap:24px;
+    }
+
+    /* Buttons */
+    .button-row{
+      display:flex;
+      gap:20px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-bottom:24px;
+      margin-top:6px;
+    }
+
+    .big-button{
+      padding:14px 24px;
+      border-radius:10px;
+      border:none;
+      font-size:1.1rem;
+      cursor:pointer;
+      background:var(--accent);
+      color:white;
+      min-width:200px;
+    }
+    .big-button:hover{ background:var(--accent-hover); }
+
+    /* Engine panels hidden by default */
+    #engine-magic, #engine-optiona { display:none; }
+
+    /* Sub-panels inside engines */
+    .sub-panel{
+      margin-top:20px;
+      padding:20px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#12151e;
+      
+    }
+    .sub-panel-magic{
+      margin-top:20px;
+      padding:20px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#254622; 
+      box-shadow: 
+        0 0 10px rgba(59, 246, 59, 0.15),
+        0 0 30px rgba(59, 246, 68, 0.08);
+      border-color:#061309;
+    }
+    .sub-panel-magic tr:hover td {
+      background: rgba(81, 246, 59, 0.08);
+    }
+    .sub-panel-optiona{
+      margin-top:20px;
+      padding:20px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background: rgba(246, 59, 59, 0.384); 
+      box-shadow: 
+        0 0 10px rgba(246, 59, 59, 0.15),
+        0 0 30px rgba(246, 59, 59, 0.08);
+      border-color:#061309;
+    }
+    .sub-panel-optiona tr:hover td {
+      background: rgba(81, 246, 59, 0.08);
+    }
+
+    /* Tables */
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:16px;
+      background:#171b22;
+      border-radius:8px;
+      overflow:hidden;
+    }
+    th, td{
+      padding:10px 12px;
+      border-bottom:1px solid #272d3a;
+      text-align:right;
+    }
+    th:first-child, td:first-child{ text-align:left; }
+    tr:last-child td{ border-bottom:0; }
+
+    .pill{
+      display:inline-block;
+      padding:3px 10px;
+      background:#0f172a;
+      border:1px solid #334155;
+      border-radius:999px;
+      font-size:.9rem;
+      margin-bottom:6px;
+    }
+    .btn{
+      padding:12px 14px;
+      border:0;
+      border-radius:8px;
+      color:white;
+      font-size:1rem;
+      cursor:pointer;
+      background:var(--accent);
+    }
+    .btn:hover{ background:var(--accent-hover); }
+
+    .btn-ok{ background:var(--ok); }
+    .btn-ok:hover{ background:var(--ok-hover); }
+
+    .btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+    
+    .btn-magic{
+      padding:12px 14px;
+      border:0;
+      border-radius:8px;
+      color:white;
+      font-size:1rem;
+      cursor:pointer;
+      background:var(--accent);
+      background: rgba(81, 246, 59, 0.08);
+    }
+    
+    .btn-magic:hover{ background:var(--accent-hover); }
+
+    .btn-magic-ok{ background:var(--ok); }
+    .btn-magic-ok:hover{ background:var(--ok-hover); }
+
+    .btn-magic-row{ display:flex; gap:10px; flex-wrap:wrap; }
+    
+    .btn-optiona{
+      padding:12px 14px;
+      border:0;
+      border-radius:8px;
+      color:white;
+      font-size:1rem;
+      cursor:pointer;
+      background:var(--accent);
+      background: rgba(246, 59, 59, 0.384);
+    }
+    .btn-optiona:hover{ background:var(--accent-hover); }
+
+    .btn-optiona-ok{ background:var(--ok); }
+    .btn-optiona-ok:hover{ background:var(--ok-hover); }
+
+    .btn-optiona-row{ display:flex; gap:10px; flex-wrap:wrap; }
+
+    .muted{ color:var(--muted) }
+    .muted1{ color:#ffffff; font-weight:600; font-size:1.1rem; }
+  </style>
+
+  <!-- Plotly for Option‑A -->
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+</head>
+
+<body>
+
+<header>#1079 LoL App – Combined (Magic Ratio & Option‑A)</header>
+
+<div class="container">
+
+  <!-- SHARED INPUT SECTION -->
+  <section class="panel">
+    <h2>Troop Stats Input</h2>
+
+    <div class="grid">
+      <div>
+        <h3>Infantry</h3>
+        <label>Attack (%)</label>
+        <input id="inf_atk" type="number" step="0.1" value="481.6">
+        <label>Lethality (%)</label>
+        <input id="inf_let" type="number" step="0.1" value="284.4">
+      </div>
+
+      <div>
+        <h3>Cavalry</h3>
+        <label>Attack (%)</label>
+        <input id="cav_atk" type="number" step="0.1" value="493.1">
+        <label>Lethality (%)</label>
+        <input id="cav_let" type="number" step="0.1" value="311.8">
+      </div>
+
+      <div>
+        <h3>Archery</h3>
+        <label>Attack (%)</label>
+        <input id="arc_atk" type="number" step="0.1" value="508.8">
+        <label>Lethality (%)</label>
+        <input id="arc_let" type="number" step="0.1" value="479.7">
+      </div>
+    </div>
+
+    <label>Troop tier</label>
+    <!-- Using MAGIC tiers -->
+    <select id="troopTier">
+      <option value="T6">T6</option>
+      <option value="T9">T9</option>
+      <option value="T10">T10</option>
+      <option value="T10.TG1" selected>T10.TG1</option>
+      <option value="T10.TG2">T10.TG2</option>
+      <option value="T10.TG3">T10.TG3</option>
+      <option value="T10.TG4">T10.TG4</option>
+      <option value="T10.TG5">T10.TG5</option>
+    </select>
+
+    <div class="grid" style="margin-top:20px;">
+      <div>
+        <h3>Your available troops</h3>
+        <label>Infantry</label>
+        <input id="stockInf" type="number" min="0" value="200653">
+        <label>Cavalry</label>
+        <input id="stockCav" type="number" min="0" value="180269">
+        <label>Archers</label>
+        <input id="stockArc" type="number" min="0" value="301619">
+      </div>
+
+      <div>
+        <h3>Formation settings</h3>
+        <label>Call rally size</label>
+        <input id="rallySize" type="number" min="0" value="134850">
+        <label>Join cap</label>
+        <input id="marchSize" type="number" min="0" value="65000">
+        <label># of marches you have</label>
+        <input id="numFormations" type="number" min="1" value="6">
+      </div>
+    </div>
+
+    <label>Manual Call Rally composition (Inf/Cav/Arc)</label>
+    <input id="compInput" type="text" placeholder="e.g. 5/15/80">
+    <div id="compHint" class="muted" style="margin-top:6px"></div>
+  </section>
+
+  <!-- ENGINE SELECT BUTTONS -->
+  <div class="button-row">
+    <button id="btn-magic" class="big-button" style="background: rgba(81, 246, 59, 0.384);">✨ <strong>Magic Ratio</strong> ✨</button>
+    <button id="btn-optiona" class="big-button" style="background: rgba(246, 59, 59, 0.384);">⚡<strong>Option-A Composition</strong>⚡</button>
+  </div>
+  <!-- ===================== -->
+  <!-- MAGIC ENGINE (panel)  -->
+  <!-- ===================== -->
+  <section id="engine-magic" class="panel">
+    <h2 style="text-align: center;">✨Magic Ratio✨</h2>
+
+    <!-- Control row: selected tier note + recommended marches -->
+    <div class="sub-panel">
+      <!-- Compositions -->
+    <section class="sub-panel-magic" style="margin-top:20px;">
+      <h3 style="margin-top:0;">Compositions</h3>
+      <div class="pill" style="margin-bottom:10px;">Call rally</div>
+      <div id="fractionReadout" class="muted1" style="margin-top:8px"></div>
+      <div id="callRallyTable" style="margin-top:10px"></div>
+
+      <div class="pill" style="margin-top:18px; margin-bottom:10px;">Join rallies</div>
+      <div id="joinTableWrap" style="margin-top:10px"></div>
+    </section>
+      <div class="btn-row" style="justify-content:space-between; align-items:center;">
+        <div style="margin-top:10px;">
+          <span class="pill">Score simulator</span>
+          <span id="selectedTierNote" class="muted" style="margin-left:8px;"></span>
+        </div>
+        <div class="btn-row">
+
+        </div>
+      </div>
+      <div class="muted" style="margin-top:8px;">
+        Top‑10 best-scoring call/join set‑ups (simulated with your damage engine).
+      </div>
+
+      <div class="sub-panel" style="background:#131821; border-color:#2d3340;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div>
+            <div style="font-weight:600">Recommended marches</div>
+            <div id="recommendedDisplay" class="muted" style="margin-top:4px;">…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Readouts -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px">
+      <div>
+        <div class="pill">Recommended Call Rally</div>
+        <div id="fractionReadout" class="muted" style="margin-top:8px"></div>
+      </div>
+      <div>
+        <div class="pill">Inventory result</div>
+        <div id="inventoryReadout" class="muted" style="margin-top:8px; white-space:pre-line;"></div>
+      </div>
+    </div>
+
+    <!-- Scoreboard -->
+    <section class="sub-panel">
+      <h3 style="margin-top:0;">Scoreboard</h3>
+      <div class="muted" style="margin-bottom:8px">
+        Showing Top‑10 setups: <em># / Call formation / Call score / Join formation / Join score / Total score</em>
+      </div>
+      <div id="scoreboardTableWrap"></div>
+    </section>
+
+    <!-- Hidden fields used by Magic logic -->
+    <input id="hiddenLastMode" type="hidden" value="magic12">
+    <input id="hiddenBestFractions" type="hidden" value="">
+  </section>
+  <!-- ========================= -->
+  <!-- OPTION‑A ENGINE (panel)   -->
+  <!-- ========================= -->
+  <section id="engine-optiona" class="panel">
+        <h2 style="text-align: center;">⚡  Option‑A — Plot & Formation Optimizer ⚡</h2>
+    <section class="sub-panel-optiona">
+      <strong><div id="bestReadout" class="muted1" style="margin-top:10px; text-align: center; text-decoration: solid;"></div></strong>
+      <div id="optTableWrap" style="margin-top:10px"></div>
+    </section >
+
+    <!-- Plot -->
+    <section class="sub-panel">
+      <div id="ternaryPlot" style="width:100%; height:650px;"></div>
+      <div id="bestReadout" class="muted" style="margin-top:10px"></div>
+    </section>
+
+
+    <!-- Readouts -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px">
+      <div>
+        <div class="pill">Target fractions</div>
+        <div id="opt_fractionReadout" class="muted" style="margin-top:8px"></div>
+      </div>
+      <div>
+        <div class="pill">Inventory result</div>
+        <div id="opt_inventoryReadout" class="muted" style="margin-top:8px; white-space:pre-line;"></div>
+      </div>
+    </div>
+
+    <div class="sub-panel" style="margin-top:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:600">Recommended marches</div>
+          <div id="opt_recommendedDisplay" class="muted" style="margin-top:4px;">…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div> <!-- /container -->
+
+<!-- PAGE-LEVEL TOGGLING + LAZY INIT -->
+<script>
+  let magicInited = false;
+  let optionInited = false;
+
+  const magicBtn = document.getElementById('btn-magic');
+  const optionBtn = document.getElementById('btn-optiona');
+  const magicPanel = document.getElementById('engine-magic');
+  const optionPanel = document.getElementById('engine-optiona');
+
+  function showPanel(which){
+    if (which === 'magic') {
+      magicPanel.style.display = 'block';
+      optionPanel.style.display = 'none';
+      if (!magicInited && window.Magic && typeof window.Magic.init === 'function') {
+        window.Magic.init();      // attach listeners, do NOT auto-compute
+        magicInited = true;
+      }
+    } else if (which === 'optiona') {
+      optionPanel.style.display = 'block';
+      magicPanel.style.display = 'none';
+      if (!optionInited && window.OptionA && typeof window.OptionA.init === 'function') {
+        window.OptionA.init();    // attach listeners AND auto-compute (plot + optimizer)
+        optionInited = true;
+      } else if (window.OptionA && typeof window.OptionA.computeAll === 'function') {
+        // compute again if already inited and user returns to Option‑A
+        window.OptionA.computeAll();
+      }
+    }
+  }
+
+  magicBtn.addEventListener('click', () => showPanel('magic'));
+  optionBtn.addEventListener('click', () => showPanel('optiona'));
+
+  // On first load: show nothing (per your UX). Panels appear only after a button is clicked.
+</script>
+
+<!-- Engines (updated JS) -->
+<script src="app1.js"></script>
+<script src="app2.js"></script>
+
+</body>
+</html>
