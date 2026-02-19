@@ -29,11 +29,23 @@
     }
 
     header{
-      padding:26px 16px;
+      padding:12px 16px;
       text-align:center;
       font-size:1.4rem;
       font-weight:600;
       letter-spacing:.4px;
+    }
+    
+    .logo-badge{
+      max-width:100px;
+      margin-bottom:16px;
+    }
+    
+    .logo-badge img{
+      max-width:100%;
+      height:auto;
+      border-radius:8px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);
     }
 
     .container{
@@ -119,7 +131,7 @@
       border-radius:10px;
       border:1px solid var(--border);
       background:#12151e;
-      
+      overflow-x: auto;
     }
     .sub-panel-magic{
       margin-top:20px;
@@ -131,6 +143,7 @@
         0 0 10px rgba(59, 246, 59, 0.15),
         0 0 30px rgba(59, 246, 68, 0.08);
       border-color:#061309;
+      overflow-x: auto;
     }
     .sub-panel-magic tr:hover td {
       background: rgba(81, 246, 59, 0.08);
@@ -145,6 +158,7 @@
         0 0 10px rgba(246, 59, 59, 0.15),
         0 0 30px rgba(246, 59, 59, 0.08);
       border-color:#061309;
+      overflow-x: auto;
     }
     .sub-panel-optiona tr:hover td {
       background: rgba(81, 246, 59, 0.08);
@@ -163,6 +177,7 @@
       padding:10px 12px;
       border-bottom:1px solid #272d3a;
       text-align:right;
+      word-break: break-word;
     }
     th:first-child, td:first-child{ text-align:left; }
     tr:last-child td{ border-bottom:0; }
@@ -229,6 +244,157 @@
 
     .muted{ color:var(--muted) }
     .muted1{ color:#ffffff; font-weight:600; font-size:1.1rem; }
+
+    /* Mobile responsive styles */
+    @media (max-width: 768px) {
+      header {
+        padding: 8px 16px;
+        font-size: 1.1rem;
+      }
+      
+      .logo-badge {
+        max-width: 80px;
+      }
+
+      .container {
+        padding: 0 12px 30px;
+      }
+
+      .panel {
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+
+      h2 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+      }
+
+      h3 {
+        font-size: 1rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .button-row {
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .big-button {
+        padding: 12px 16px;
+        font-size: 1rem;
+        min-width: 140px;
+        flex: 1;
+        min-width: 140px;
+      }
+
+      label {
+        font-size: 0.85rem;
+        margin: 8px 0 4px;
+      }
+
+      input, select {
+        padding: 10px;
+        font-size: 1rem;
+      }
+
+      /* Table scroll wrapper for mobile */
+      table {
+        font-size: 0.85rem;
+        margin-top: 12px;
+        overflow-x: auto;
+        max-width: 100%;
+      }
+
+      th, td {
+        padding: 8px 6px;
+      }
+
+      /* Ensure tables scroll horizontally on mobile */
+      .sub-panel,
+      .sub-panel-magic,
+      .sub-panel-optiona {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 100%;
+        overflow-x: auto;
+      }
+
+      .pill {
+        font-size: 0.8rem;
+        padding: 2px 8px;
+      }
+
+      .btn {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+
+      #ternaryPlot {
+        height: 400px !important;
+      }
+
+      div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        font-size: 1rem;
+        padding: 8px 10px;
+      }
+      
+      .logo-badge {
+        max-width: 60px;
+      }
+
+      .container {
+        padding: 0 8px 20px;
+      }
+
+      .panel {
+        padding: 12px;
+        border-radius: 8px;
+      }
+
+      h2 {
+        font-size: 1rem;
+      }
+
+      .big-button {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        min-width: 120px;
+      }
+
+      input, select {
+        padding: 8px;
+        font-size: 16px;
+      }
+
+      table {
+        font-size: 0.75rem;
+      }
+
+      th, td {
+        padding: 6px 4px;
+      }
+
+      .sub-panel {
+        padding: 10px;
+      }
+
+      #ternaryPlot {
+        height: 300px !important;
+      }
+    }
   </style>
 
   <!-- Plotly for Option‑A -->
@@ -240,6 +406,11 @@
 <header>#1079 LoL App – Combined (Magic Ratio & Option‑A)</header>
 
 <div class="container">
+
+  <!-- Logo Badge -->
+  <div class="logo-badge">
+    <img src="bear.jpg" alt="Bear Logo">
+  </div>
 
   <!-- SHARED INPUT SECTION -->
   <section class="panel">
@@ -426,39 +597,146 @@
 
 <!-- PAGE-LEVEL TOGGLING + LAZY INIT -->
 <script>
-  let magicInited = false;
-  let optionInited = false;
+  // ========== State Management ==========
+  const APP_STATE = {
+    activeEngine: null,
+    magicInited: false,
+    optionInited: false
+  };
 
-  const magicBtn = document.getElementById('btn-magic');
-  const optionBtn = document.getElementById('btn-optiona');
-  const magicPanel = document.getElementById('engine-magic');
-  const optionPanel = document.getElementById('engine-optiona');
+  const WATCH_IDS = [
+    'inf_atk', 'inf_let', 'cav_atk', 'cav_let', 'arc_atk', 'arc_let',
+    'troopTier', 'stockInf', 'stockCav', 'stockArc',
+    'rallySize', 'marchSize', 'numFormations', 'compInput'
+  ];
 
-  function showPanel(which){
-    if (which === 'magic') {
+  // ========== Utility: Debounce ==========
+  function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  }
+
+  // Engine activation and panel management
+  function activateEngine(engineName) {
+    const magicPanel = document.getElementById('engine-magic');
+    const optionPanel = document.getElementById('engine-optiona');
+
+    if (engineName === 'magic') {
+      APP_STATE.activeEngine = 'magic';
       magicPanel.style.display = 'block';
       optionPanel.style.display = 'none';
-      if (!magicInited && window.Magic && typeof window.Magic.init === 'function') {
-        window.Magic.init();      // attach listeners, do NOT auto-compute
-        magicInited = true;
+
+      if (!APP_STATE.magicInited && window.Magic && typeof window.Magic.init === 'function') {
+        window.Magic.init();  // This will call compute('magic12') when TIERS loads
+        APP_STATE.magicInited = true;
+      } else if (window.Magic && typeof window.Magic.compute === 'function') {
+        // On subsequent activations, recalculate
+        window.Magic.compute('magic12');
       }
-    } else if (which === 'optiona') {
+    } else if (engineName === 'optiona') {
+      APP_STATE.activeEngine = 'optiona';
       optionPanel.style.display = 'block';
       magicPanel.style.display = 'none';
-      if (!optionInited && window.OptionA && typeof window.OptionA.init === 'function') {
-        window.OptionA.init();    // attach listeners AND auto-compute (plot + optimizer)
-        optionInited = true;
+
+      if (!APP_STATE.optionInited && window.OptionA && typeof window.OptionA.init === 'function') {
+        window.OptionA.init();
+        APP_STATE.optionInited = true;
       } else if (window.OptionA && typeof window.OptionA.computeAll === 'function') {
-        // compute again if already inited and user returns to Option‑A
         window.OptionA.computeAll();
       }
     }
+
+    saveState();
   }
 
-  magicBtn.addEventListener('click', () => showPanel('magic'));
-  optionBtn.addEventListener('click', () => showPanel('optiona'));
+  // State persistence functions
+  function saveState() {
+    const state = {
+      activeEngine: APP_STATE.activeEngine,
+      inputs: {}
+    };
+    WATCH_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) state.inputs[id] = el.value;
+    });
+    localStorage.setItem("lol1079_state_v1", JSON.stringify(state));
+  }
 
-  // On first load: show nothing (per your UX). Panels appear only after a button is clicked.
+  function restoreState() {
+    const raw = localStorage.getItem("lol1079_state_v1");
+    if (!raw) return;
+    
+    let state;
+    try { state = JSON.parse(raw); } catch { return; }
+
+    if (state.inputs) {
+      WATCH_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && state.inputs[id] !== undefined) {
+          el.value = state.inputs[id];
+        }
+      });
+    }
+
+    if (state.activeEngine) {
+      APP_STATE.activeEngine = state.activeEngine;
+    }
+  }
+
+  const debouncedSave = debounce(saveState, 300);
+
+  function attachInputListeners() {
+    WATCH_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      el.addEventListener('input', () => {
+        debouncedSave();
+        if (APP_STATE.activeEngine === 'magic' && window.Magic && typeof window.Magic.compute === 'function') {
+          window.Magic.compute('magic12');
+        } else if (APP_STATE.activeEngine === 'optiona' && window.OptionA && typeof window.OptionA.computeAll === 'function') {
+          window.OptionA.computeAll();
+        }
+      });
+
+      el.addEventListener('change', () => {
+        debouncedSave();
+        if (APP_STATE.activeEngine === 'magic' && window.Magic && typeof window.Magic.compute === 'function') {
+          window.Magic.compute('magic12');
+        } else if (APP_STATE.activeEngine === 'optiona' && window.OptionA && typeof window.OptionA.computeAll === 'function') {
+          window.OptionA.computeAll();
+        }
+      });
+    });
+  }
+
+  function setupButtonListeners() {
+    const magicBtn = document.getElementById('btn-magic');
+    const optionBtn = document.getElementById('btn-optiona');
+
+    if (magicBtn) magicBtn.addEventListener('click', () => activateEngine('magic'));
+    if (optionBtn) optionBtn.addEventListener('click', () => activateEngine('optiona'));
+  }
+
+  function initPage() {
+    restoreState();
+    attachInputListeners();
+    setupButtonListeners();
+
+    if (APP_STATE.activeEngine) {
+      setTimeout(() => activateEngine(APP_STATE.activeEngine), 100);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPage);
+  } else {
+    initPage();
+  }
+
 </script>
 
 <!-- Engines (updated JS) -->
